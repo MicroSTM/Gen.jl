@@ -97,7 +97,7 @@ end
 Initialize the state of a particle filter, using the default proposal for the initial latent state.
 """
 function initialize_particle_filter(model::GenerativeFunction{T,U}, model_args::Tuple,
-        observations::ChoiceMap, num_particles::Int) where {T,U}
+        observations::ChoiceMap, num_particles::Int, multithreaded=false) where {T,U}
     traces = Vector{Any}(undef, num_particles)
     log_weights = Vector{Float64}(undef, num_particles)
     if multithreaded
