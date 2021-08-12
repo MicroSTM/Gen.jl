@@ -102,8 +102,8 @@ function initialize_particle_filter(model::GenerativeFunction{T,U}, model_args::
         observations::ChoiceMap, num_particles::Int, multithreaded=false) where {T,U}
     traces = Vector{Any}(undef, num_particles)
     log_weights = Vector{Float64}(undef, num_particles)
-    shared_traces = SharedArrays{Any,1}((num_particles,))
-    shared_log_weights = SharedArrays{Float64,1}((num_particles,))
+    shared_traces = SharedArrays{Any}(num_particles)
+    shared_log_weights = SharedArrays{Float64}(num_particles)
     if multithreaded
         @distributed for i in 1:num_particles
             initialize_particle_filter_iter!(shared_traces, shared_log_weights, model, model_args, observations, i)
