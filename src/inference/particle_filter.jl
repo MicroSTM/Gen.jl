@@ -100,12 +100,27 @@ function initialize_particle_filter(model::GenerativeFunction{T,U}, model_args::
         observations::ChoiceMap, num_particles::Int) where {T,U}
     traces = Vector{Any}(undef, num_particles)
     log_weights = Vector{Float64}(undef, num_particles)
-    for i=1:num_particles
-        (traces[i], log_weights[i]) = generate(model, model_args, observations)
+    if multithreaded
+        Threads.@threads for i in 1:num_particles
+            initialize_particle_filter_iter!(traces, log_weights, model, model_args, observations, i)
+        end
+    else
+        for i=1:num_particles
+            initialize_particle_filter_iter!(traces, log_weights, model, model_args, observations, i)
+        end
     end
     ParticleFilterState{U}(traces, Vector{U}(undef, num_particles),
         log_weights, 0., collect(1:num_particles))
 end
+
+
+function initialize_particle_filter_iter!(traces::Vector, log_weights::Vector{Float64},
+        model::GenerativeFunction, model_args::Tuple,
+        observations::ChoiceMap, i::Int)
+    (traces[i], log_weights[i]) = generate(model, model_args, observations)
+    return nothing
+end
+
 
 """
     (log_incremental_weights,) = particle_filter_step!(
