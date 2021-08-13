@@ -126,7 +126,7 @@ end
 function initialize_particle_filter_iter!(traces::Vector, log_weights::Vector{Float64},
         model::GenerativeFunction, model_args::Tuple,
         observations::ChoiceMap, i::Int)
-    (traces[i], log_weights[i]) = generate(model, tuple(model_args...,(i,)...), observations)
+    (traces[i], log_weights[i]) = generate(model, tuple((i-1,)...,model_args...), observations)
     return nothing
 end
 
